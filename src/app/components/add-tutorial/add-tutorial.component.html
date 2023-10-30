@@ -1,0 +1,33 @@
+<div class=" mt-5">
+    <h1 class="mb-3 text-center">Add Tutorial</h1>
+      <div class="submit-form">
+        <div *ngIf="!submitted">
+          <div class="form-group mb-3">
+            <label for="title" class="mb-2">Title</label>
+            <input
+              type="text"
+              class="form-control"
+              id="title"
+              required
+              [(ngModel)]="tutorial.title"
+              name="title"
+            />
+          </div>
+          <div class="form-group mb-3">
+            <label for="description" class="mb-2">Description</label>
+            <input
+              class="form-control"
+              id="description"
+              required
+              [(ngModel)]="tutorial.description"
+              name="description"
+            />
+          </div>
+          <button (click)="saveTutorial()" class="btn btn-success">Submit</button>
+        </div>
+        <div *ngIf="submitted">
+          <h4>Tutorial was submitted successfully!</h4>
+          <button class="btn btn-success" (click)="newTutorial()">Add</button>
+        </div>
+      </div>
+    </div>
