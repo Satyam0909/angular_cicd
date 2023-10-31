@@ -9,14 +9,19 @@ stages:
   # - deploy
 
 variables:
-  CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:latest
+  # CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:latest
+  DOCKER_REGISTRY: https://hub.docker.com/u/
+  DOCKER_IMAGE_NAME: angular-cicd-crud
 
 build the docker image:
   stage: build
     script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CONTAINER_TEST_IMAGE .
-    - docker push $CONTAINER_TEST_IMAGE
+    # - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY
+    - docker build -t $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA .
+    # - docker build -t $CONTAINER_TEST_IMAGE .
+    # - docker push $CONTAINER_TEST_IMAGE
+    - docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA
     - docker logout
 
 #   artifacts:
