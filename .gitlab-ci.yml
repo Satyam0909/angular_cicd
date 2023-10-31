@@ -96,23 +96,65 @@
 
 
 
+# stages:
+# - build
+
+# build:
+#   # Use the official docker image.
+#   image: docker:latest
+#   stage: build
+#   services:
+#     - docker:dind
+#   before_script:
+#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+#   script:
+#     - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" .
+#     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+
+#   # Run this job where a Dockerfile exists
+#   rules:
+#     - if: $CI_COMMIT_BRANCH
+#       exists:
+#         - Dockerfile
+
+
+image: docker:latest
+
+services:
+  - docker:dind
+
 stages:
-- build
+  - build
+  # - test
+  # - deploy
 
-build:
-  # Use the official docker image.
-  image: docker:latest
+variables:
+  # CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:latest
+  DOCKER_REGISTRY: https://hub.docker.com/
+  DOCKER_IMAGE_NAME: angular-cicd-crud
+
+build the docker image:
   stage: build
-  services:
-    - docker:dind
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+    script:
+    # - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY
+    - docker build -t $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA .
+    # - docker build -t $CONTAINER_TEST_IMAGE .
+    # - docker push $CONTAINER_TEST_IMAGE
+    - docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA
+    - docker logout
 
-  # Run this job where a Dockerfile exists
-  rules:
-    - if: $CI_COMMIT_BRANCH
-      exists:
-        - Dockerfile
+#   artifacts:
+#     paths:
+#       - build/
+
+
+# test the docker image:
+#   stage: test
+#     script:
+#       - "Testing Docker"
+
+# deploy the docker image:
+#   stage: deploy
+#     script:
+#       - "Deployed successfully"
