@@ -34,7 +34,7 @@ deploy:
   stage: deploy
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-    # - docker-compose -f path/to/your/docker-compose.yml up -d
+    - docker-compose -f docker-compose.yml up -d
   only:
     - master  # You can specify when to deploy, e.g., only on the "master" branch
   # dependencies:
