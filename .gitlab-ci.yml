@@ -10,7 +10,7 @@ stages:
 
 variables:
   DOCKER_DRIVER: overlay2
-  DOCKER_REGISTRY: https://registry.hub.docker.com
+  DOCKER_REGISTRY: https://hub.docker.com/u/
   DOCKER_IMAGE_NAME: angular-cicd-crud
   DOCKER_IMAGE_TAG: latest
   DOCKER_USERNAME: satyam0999
