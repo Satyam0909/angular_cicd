@@ -15,7 +15,7 @@ variables:
   DOCKER_IMAGE_TAG: latest
   DOCKER_USERNAME: satyam0999
   DOCKER_PASSWORD: Sep@12345
-    secure: your_secure_password_variable
+    # secure: your_secure_password_variable
 
 
 before_script:
