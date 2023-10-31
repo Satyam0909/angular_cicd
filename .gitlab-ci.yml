@@ -1,0 +1,18 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - deploy  # You can remove the "build" stage if it's not needed
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+deploy:
+  stage: deploy
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker-compose -f docker-compose.yml up -d
+  only:
+    - master  # You can specify when to deploy, e.g., only on the "master" branch
