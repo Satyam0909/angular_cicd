@@ -11,19 +11,21 @@ stages:
 build the docker image:
   stage: build
     script:
-      - "docker build --"
+    - docker build -t $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA .
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY
+    - docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA
 
-  artifacts:
-    paths:
-      - build/
+#   artifacts:
+#     paths:
+#       - build/
 
 
-test the docker image:
-  stage: test
-    script:
-      - "Testing Docker"
+# test the docker image:
+#   stage: test
+#     script:
+#       - "Testing Docker"
 
-deploy the docker image:
-  stage: deploy
-    script:
-      - "Deployed successfully"
+# deploy the docker image:
+#   stage: deploy
+#     script:
+#       - "Deployed successfully"
