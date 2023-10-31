@@ -171,7 +171,7 @@ stages:
 
 variables:
   DOCKER_REGISTRY: https://index.docker.io/v1/
-  DOCKER_REPOSITORY: DemoCICD  # Replace with your Docker Hub username
+  DOCKER_REPOSITORY: democicd  # Replace with your Docker Hub username
   DOCKER_IMAGE_NAME: angular-cicd-crud
 
 build:
