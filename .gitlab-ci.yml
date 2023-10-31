@@ -20,7 +20,8 @@ variables:
 
 before_script:
   - docker info
-  - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin $DOCKER_REGISTRY
+  - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin docker.io
+
 
 build:
   stage: build
