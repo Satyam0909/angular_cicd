@@ -1,100 +1,7 @@
-# image: docker:latest
+image: docker:latest
 
-# services:
-#   - docker:dind
-
-# stages:
-#   - build
-#   # - test
-#   - deploy
-
-# variables:
-#   DOCKER_DRIVER: overlay2
-#   DOCKER_REGISTRY: https://hub.docker.com/u/
-#   DOCKER_IMAGE_NAME: angular-cicd-crud
-#   DOCKER_IMAGE_TAG: latest
-#   DOCKER_USERNAME: satyam0999
-#   DOCKER_PASSWORD: Sep@12345 
-#     # secure: your_secure_password_variable
-
-
-# before_script:
-#   - docker info
-#   - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin docker.io
-
-
-# build:
-#   stage: build
-#   script:
-#     - docker build -t $CI_REGISTRY_IMAGE:latest .
-#     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-#     - docker push $CI_REGISTRY_IMAGE:latest
-
-# deploy:
-#   stage: deploy
-#   script:
-#     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-#     - docker-compose -f docker-compose.yml up -d
-#   only:
-#     - master  # You can specify when to deploy, e.g., only on the "master" branch
-#   # dependencies:
-#   #   - build  # Ensure the "build" job completes before deploying
-
-# # build:
-# #   stage: build
-# #   script:
-# #     # - docker build -t angular-cicd-crud .
-# #     # - docker run -d -p 80:80 angular-cicd-crud
-# #     - docker build -t $CI_REGISTRY_IMAGE:latest .
-# #     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-# #     - docker push $CI_REGISTRY_IMAGE:latest
-
-# # variables:
-# #   SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY  # Add a secret variable in GitLab for your SSH private key
-# #   SSH_USER: your-ssh-username
-# #   SSH_HOST: your-server-ip
-
-# # deploy:
-# #   stage: deploy
-# #   script:
-# #     - apk add --no-cache openssh-client  # Install SSH client (for Alpine Linux)
-# #     - eval $(ssh-agent -s)  # Start SSH agent
-# #     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null  # Add SSH private key
-# #     - ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts  # Add the host to known hosts
-# #     - ssh $SSH_USER@$SSH_HOST "docker pull your-docker-image:latest"  # Pull the latest Docker image
-# #     - ssh $SSH_USER@$SSH_HOST "docker stop your-container-name || true"  # Stop the existing container
-# #     - ssh $SSH_USER@$SSH_HOST "docker rm your-container-name || true"  # Remove the existing container
-# #     - ssh $SSH_USER@$SSH_HOST "docker run -d --name your-container-name -p 80:80 your-docker-image:latest"  # Run the new container
-
-
-# # stages:
-# #   - build
-# #   - deploy
-
-# # variables:
-# #   DOCKER_REGISTRY: registry.example.com
-# #   DOCKER_IMAGE_NAME: my-docker-image
-# #   DOCKER_IMAGE_TAG: latest
-# #   DOCKER_USERNAME: your_docker_username
-# #   DOCKER_PASSWORD:
-# #     secure: your_secure_password_variable
-
-# # before_script:
-# #   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REGISTRY
-
-# # build_image:
-# #   stage: build
-# #   script:
-# #     - docker build -t $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG .
-# #     - docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
-
-# # deploy_to_production:
-# #   stage: deploy
-# #   script:
-# #     - docker pull $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
-# #     - # Add your deployment steps here
-
-
+services:
+  - docker:dind
 
 # stages:
 # - build
@@ -125,7 +32,11 @@ services:
 
 stages:
   - build
+<<<<<<< HEAD
   # - test
+=======
+  - test
+>>>>>>> 68643bc8a8dc4178a8d15fa0feeac9030c3c8cb6
   # - deploy
 
 variables:
@@ -149,10 +60,17 @@ build the docker image:
 #       - build/
 
 
+<<<<<<< HEAD
 # test the docker image:
 #   stage: test
 #     script:
 #       - "Testing Docker"
+=======
+test the docker image:
+  stage: test
+    script:
+      - "Testing Docker"
+>>>>>>> 68643bc8a8dc4178a8d15fa0feeac9030c3c8cb6
 
 # deploy the docker image:
 #   stage: deploy
