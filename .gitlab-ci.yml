@@ -10,7 +10,7 @@ stages:
 
 variables:
   # CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:latest
-  DOCKER_REGISTRY: https://hub.docker.com/u/
+  DOCKER_REGISTRY: https://hub.docker.com/
   DOCKER_IMAGE_NAME: angular-cicd-crud
 
 build the docker image:
