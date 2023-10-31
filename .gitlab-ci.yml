@@ -5,7 +5,7 @@ services:
 
 stages:
   - build
-  # - test
+  - test
   # - deploy
 
 variables:
@@ -29,10 +29,10 @@ build the docker image:
 #       - build/
 
 
-# test the docker image:
-#   stage: test
-#     script:
-#       - "Testing Docker"
+test the docker image:
+  stage: test
+    script:
+      - "Testing Docker"
 
 # deploy the docker image:
 #   stage: deploy
