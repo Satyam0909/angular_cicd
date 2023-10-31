@@ -14,13 +14,13 @@ variables:
   DOCKER_IMAGE_NAME: angular-cicd-crud
   DOCKER_IMAGE_TAG: latest
   DOCKER_USERNAME: satyam0999
-  DOCKER_PASSWORD: Sep@12345
+  DOCKER_PASSWORD: Sep@12345 
     # secure: your_secure_password_variable
 
 
 before_script:
   - docker info
-  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REGISTRY
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD --password-stdin $DOCKER_REGISTRY
 
 
 build:
