@@ -8,17 +8,22 @@ stages:
   - test
   - deploy
 
-# build the docker image:
-#   stage: build
-#     script:
-#       - "docker build --"
+build the docker image:
+  stage: build
+    script:
+      - "docker build --"
 
-# test the docker image:
-#   stage: test
-#     script:
-#       - "Testing Docker"
+  artifacts:
+    paths:
+      - build/
 
-# deploy the docker image:
-#   stage: deploy
-#     script:
-#       - "Deployed successfully"
+
+test the docker image:
+  stage: test
+    script:
+      - "Testing Docker"
+
+deploy the docker image:
+  stage: deploy
+    script:
+      - "Deployed successfully"
