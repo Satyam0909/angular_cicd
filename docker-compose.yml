@@ -1,0 +1,9 @@
+version: '3'
+services:
+  frontend:
+    image: angular-cicd-crud
+    build: angular-cicd-crud
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
