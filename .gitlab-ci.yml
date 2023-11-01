@@ -152,7 +152,7 @@ services:
 
 stages:
   - build
-  # - test
+  - test
   - deploy
 
 before_script:
@@ -171,13 +171,22 @@ build:
     - docker push "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
     - docker logout
 
-# test:
-#   stage: test
-#   script:
-#    - "Testing successful"
+test:
+  stage: test
+  image: node
+  only:
+   - stage
+  before_script:
+   - echo -n "Running docker build successfully"
+  script:
+   - npm install
+   - npm test
 
 deploy_to_production:
   stage: deploy
+  image: node
+  only:
+   - stage
   script:
     - kubectl apply -f deployment.yaml # Use the appropriate command for your orchestration tool
   only:
