@@ -152,6 +152,7 @@ services:
 
 stages:
   - build
+  - test
   # - deploy
 
 variables:
@@ -165,7 +166,12 @@ build:
     - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USER" --password-stdin "$DOCKER_REGISTRY"
     - docker build -t "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" .
     - docker push "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
-    # - docker logout
+    - docker logout
+
+test the docker image:
+  stage: test
+    script:
+      - "Testing succeeded"
 
 # deploy:
 #   stage: deploy
