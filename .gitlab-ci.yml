@@ -168,10 +168,10 @@ build:
     - docker push "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
     - docker logout
 
-test the docker image:
+test:
   stage: test
-    script:
-      - "Testing succeeded"
+  script:
+   - "Testing successful"
 
 # deploy:
 #   stage: deploy
