@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app # Name of the Deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app  # Label selector to match pods with the label 'app: my-app'
+  template:
+    metadata:
+      labels:
+        app: my-app # Label applied to the pods created by this Deployment
+    spec:
+      containers:
+      - name: my-app
+        image: $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA
+        ports:
+        - containerPort: 80

@@ -152,8 +152,11 @@ services:
 
 stages:
   - build
-  - test
-  # - deploy
+  # - test
+  - deploy
+
+before_script:
+  - docker info
 
 variables:
   DOCKER_REGISTRY: https://index.docker.io/v1/
@@ -168,14 +171,14 @@ build:
     - docker push "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
     - docker logout
 
-test:
-  stage: test
-  script:
-   - "Testing successful"
-
-# deploy:
-#   stage: deploy
+# test:
+#   stage: test
 #   script:
-#     - kubectl apply -f deployment.yaml # Use the appropriate command for your orchestration tool
-#   only:
-#     - master # Define when this job should run (e.g., only on the master branch)
+#    - "Testing successful"
+
+deploy_to_production:
+  stage: deploy
+  script:
+    - kubectl apply -f deployment.yaml # Use the appropriate command for your orchestration tool
+  only:
+    - master # Define when this job should run (e.g., only on the master branch)
