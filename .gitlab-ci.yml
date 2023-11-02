@@ -11,7 +11,7 @@ before_script:
   - docker info
 
 variables:
-  DOCKER_REGISTRY: 021103227433.dkr.ecr.ap-south-1.amazonaws.com #<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com
+  DOCKER_REGISTRY: 021103227433.dkr.ecr.ap-south-1.amazonaws.com/angular-cicd #<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com
   DOCKER_REPOSITORY: angular-cicd #<ECR_REPOSITORY_NAME>
   DOCKER_IMAGE_NAME: angular-cicd-crud #<IMAGE_NAME>
   AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID  # Define these environment variables in your GitLab CI/CD settings
