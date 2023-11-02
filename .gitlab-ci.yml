@@ -3,9 +3,9 @@
 # services:
 #   - docker:dind
 
-stages:
-  - build
-  # - deploy
+# stages:
+#   - build
+#   - deploy
 
 # before_script:
 #   - docker info
