@@ -3,9 +3,9 @@
 # services:
 #   - docker:dind
 
-# stages:
-#   - build
-#   - deploy
+stages:
+  - build
+  - deploy
 
 # before_script:
 #   - docker info
@@ -23,7 +23,8 @@ variables:
 
 
 
-publish:
+Publishing_image_to_AWS_ECR:
+  stage: build
   image:
    name: amazon/aws-cli
    entrypoint: [""]
@@ -47,20 +48,18 @@ publish:
     # - docker system prune -af
     - docker logout
 
-# deploy:
-#   stage: deploy
-#   script:
-#     - apt-get update
-#     - apt-get install -y awscli
-#     - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-#     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-#     - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
-#     - docker pull "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
-#     - docker tag "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
-#     - docker push "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+deploy:
+  stage: deploy
+  script:
+    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
+    - docker pull "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+    - docker tag "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
 
-#     # Deploy to ECS (you will need to customize these commands based on your ECS setup)
-#     - aws ecs update-service --cluster <ECS_CLUSTER_NAME> --service <ECS_SERVICE_NAME> --force-new-deployment
+    # Deploy to ECS (you will need to customize these commands based on your ECS setup)
+    - aws ecs update-service --cluster angular-cicd-cluster --service angular-cicd --force-new-deployment
 
-#     # Optionally, clean up old Docker images to save space on GitLab Runner
-#     - docker system prune -af
+    # Optionally, clean up old Docker images to save space on GitLab Runner
+    - docker system prune -af
+    - docker logout
