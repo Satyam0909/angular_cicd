@@ -20,20 +20,19 @@ variables:
 build:
   stage: build
   script:
-    - npm install 
     - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-    - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
+    - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USER" --password-stdin "$DOCKER_REGISTRY"
     - docker build -t "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" .
     - docker push "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
-    # - docker logout
+    - docker logout
 
 deploy:
   stage: deploy
   script:
-    # - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-    # - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-    # - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
+    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
     - docker pull "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
     - docker tag "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
     - docker push "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
