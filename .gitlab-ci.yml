@@ -8,7 +8,7 @@ services:
 stages:
   - build
   - deploy
-  # - testrer
+  # - test
 
 before_script:
   - amazon-linux-extras install docker
