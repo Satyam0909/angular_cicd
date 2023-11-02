@@ -1,17 +1,16 @@
-image: docker:latest
-image: amazon/aws-cli
+# image: docker:latest
 
-services:
-  - docker:dind
+# services:
+#   - docker:dind
 
 stages:
   - build
-  - deploy
+  # - deploy
 
-before_script:
-  - docker info
-  - apt-get update
-  - apt-get install -y awscli
+# before_script:
+#   - docker info
+#   - apt-get update
+#   - apt-get install -y awscli
 
 variables:
   DOCKER_REGISTRY: 021103227433.dkr.ecr.ap-south-1.amazonaws.com #<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com
@@ -19,31 +18,45 @@ variables:
   DOCKER_IMAGE_NAME: angular-cicd-crud #<IMAGE_NAME>
   AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID  # Define these environment variables in your GitLab CI/CD settings
   AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+  DOCKER_HOST: tcp://docker:2375
 
-build:
-  stage: build
+
+
+
+publish:
+  image:
+   name: amazon/aws-cli
+   entrypoinyt: [""]
+  services:
+    - docker:dind
+  before_script:
+    - amazon-linux-extras install docker
+    - aws --version
+    - docker --version
   script:
-    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    - docker build -t "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" .
     - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
-    - docker build -t "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" .
-    - docker push "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+    # - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+    # - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    # - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
+    # - docker build -t "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" .
+    - docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
     - docker logout
 
-deploy:
-  stage: deploy
-  script:
-    - apt-get update
-    - apt-get install -y awscli
-    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-    - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
-    - docker pull "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
-    - docker tag "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
-    - docker push "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+# deploy:
+#   stage: deploy
+#   script:
+#     - apt-get update
+#     - apt-get install -y awscli
+#     - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+#     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+#     - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
+#     - docker pull "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+#     - docker tag "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+#     - docker push "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
 
-    # Deploy to ECS (you will need to customize these commands based on your ECS setup)
-    - aws ecs update-service --cluster <ECS_CLUSTER_NAME> --service <ECS_SERVICE_NAME> --force-new-deployment
+#     # Deploy to ECS (you will need to customize these commands based on your ECS setup)
+#     - aws ecs update-service --cluster <ECS_CLUSTER_NAME> --service <ECS_SERVICE_NAME> --force-new-deployment
 
-    # Optionally, clean up old Docker images to save space on GitLab Runner
-    - docker system prune -af
+#     # Optionally, clean up old Docker images to save space on GitLab Runner
+#     - docker system prune -af
