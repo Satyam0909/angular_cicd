@@ -10,10 +10,10 @@ stages:
   - deploy
 
 before_script:
-  # - docker info
   - amazon-linux-extras install docker
+  - docker info
   - aws --version
-  - docker --version
+  # - docker --version
 
 variables:
   DOCKER_REGISTRY: 021103227433.dkr.ecr.ap-south-1.amazonaws.com #<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com
@@ -26,7 +26,7 @@ variables:
 
 
 
-Publishing_image_to_AWS_ECR:
+Publishing_to_AWS_ECR:
   stage: build
   # image:
   #  name: amazon/aws-cli
@@ -57,8 +57,8 @@ deploy:
     - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
     - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
-    - docker pull "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
-    - docker tag "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+    - docker pull "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+    - docker tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" "$DOCKER_REGISTRY/$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
 
     # Deploy to ECS (you will need to customize these commands based on your ECS setup)
     - aws ecs update-service --cluster angular-cicd-cluster --service angular-cicd --force-new-deployment
