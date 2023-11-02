@@ -63,8 +63,6 @@ deploy:
 
     # Deploy to ECS (you will need to customize these commands based on your ECS setup)
     - aws ecs update-service --cluster angular-cicd-cluster --service angular-cicd --force-new-deployment --region ap-south-1
-  only:
-    - master
 
     # Optionally, clean up old Docker images to save space on GitLab Runner
     - docker system prune -af
