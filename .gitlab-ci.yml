@@ -1,16 +1,19 @@
-# image: docker:latest
+image:
+  name: amazon/aws-cli
+  entrypoint: [""]
 
-# services:
-#   - docker:dind
+services:
+  - docker:dind
 
 stages:
   - build
   - deploy
 
-# before_script:
-#   - docker info
-#   - apt-get update
-#   - apt-get install -y awscli
+before_script:
+  - docker info
+  - amazon-linux-extras install docker
+  - aws --version
+  - docker --version
 
 variables:
   DOCKER_REGISTRY: 021103227433.dkr.ecr.ap-south-1.amazonaws.com #<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com
@@ -25,15 +28,15 @@ variables:
 
 Publishing_image_to_AWS_ECR:
   stage: build
-  image:
-   name: amazon/aws-cli
-   entrypoint: [""]
-  services:
-    - docker:dind
-  before_script:
-    - amazon-linux-extras install docker
-    - aws --version
-    - docker --version
+  # image:
+  #  name: amazon/aws-cli
+  #  entrypoint: [""]
+  # services:
+  #   - docker:dind
+  # before_script:
+  #   - amazon-linux-extras install docker
+  #   - aws --version
+  #   - docker --version
   script:
     - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
