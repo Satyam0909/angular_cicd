@@ -7,13 +7,18 @@ services:
 
 stages:
   - build
+  # - test
+  # - review
+  # - dast
   - deploy
+  # - production
+  # - cleanup
 
 before_script:
   - amazon-linux-extras install docker
   - docker info
   - aws --version
-  # - docker --version
+  - docker --version
 
 variables:
   DOCKER_REGISTRY: 021103227433.dkr.ecr.ap-south-1.amazonaws.com #<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com
