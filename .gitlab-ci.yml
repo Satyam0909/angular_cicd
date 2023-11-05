@@ -1,76 +1,51 @@
-image:
-  name: amazon/aws-cli
-  entrypoint: [""]
+image: docker:latest
+
+variables:
+  AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+  REPOSITORY_URL: 021103227433.dkr.ecr.ap-south-1.amazonaws.com/angular-cicd
+  REGION: ap-south-1
+  TASK_DEFINTION_NAME: angular-cicd-task
+  CLUSTER_NAME: angular-cicd-cluster
+  SERVICE_NAME: angular-cicd-service
 
 services:
-  - docker:dind
+- docker:dind
+
+before_script:
+  - apk add --no-cache curl jq python py-pip
+  - pip install awscli
+  - $(aws ecr get-login --no-include-email --region "${REGION}")
+  - IMAGE_TAG="$(echo $CI_COMMIT_SHA | head -c 8)"
+  # - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  # - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
 
 stages:
   - build
-  # - test
-  # - review
-  # - dast
   - deploy
-  # - production
-  # - cleanup1
 
-before_script:
-  - amazon-linux-extras install docker
-  - docker info
-  - aws --version
-  - docker --version
-
-variables:
-  DOCKER_REGISTRY: 021103227433.dkr.ecr.ap-south-1.amazonaws.com #<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com
-  # DOCKER_REPOSITORY: angular-cicd #<ECR_REPOSITORY_NAME>
-  DOCKER_IMAGE_NAME: angular-cicd #<IMAGE_NAME>
-  AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID  # Define these environment variables in your GitLab CI/CD settings
-  AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-  DOCKER_HOST: tcp://docker:2375
-
-
-
-
-Publishing_to_AWS_ECR:
+build:
   stage: build
-  # image:
-  #  name: amazon/aws-cli
-  #  entrypoint: [""]
-  # services:
-  #   - docker:dind
-  # before_script:
-  #   - amazon-linux-extras install docker
-  #   - aws --version
-  #   - docker --version
   script:
-    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-    - docker build -t "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" .
-    - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
-    - docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
-      # Deploy to ECS (you will need to customize these commands based on your ECS setup)
-    # - aws ecs update-service --cluster <ECS_CLUSTER_NAME> --service <ECS_SERVICE_NAME> --force-new-deployment
-
-
-      # Optionally, clean up old Docker images to save space on GitLab Runner
-    # - docker system prune -af
-    - docker logout
+    - echo "Building image..."
+    - docker build -t $REPOSITORY_URL:latest .
+    - echo "Tagging image..."
+    - docker tag $REPOSITORY_URL:latest $REPOSITORY_URL:$IMAGE_TAG
+    - echo "Pushing image..."
+    - docker push $REPOSITORY_URL:latest
+    - docker push $REPOSITORY_URL:$IMAGE_TAG
+  # only:
+  #   - master
 
 deploy:
   stage: deploy
   script:
-    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-    - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
-    - docker pull "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
-    # - docker tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" "$DOCKER_REGISTRY/$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
-
-    # Deploy to ECS (you will need to customize these commands based on your ECS setup)
-    - aws ecs update-service --cluster angular-cicd-cluster --service angular-cicd-service --force-new-deployment --region ap-south-1
-    # - aws logs describe-log-groups --log-group-name-prefix "/ecs/angular-cicd-cluster"
-    # - aws logs describe-log-streams --log-group-name "/ecs/angular-cicd-cluster/angular-cicd"
-    # - aws logs get-log-events --log-group-name "/ecs/angular-cicd-cluster/angular-cicd" --log-stream-name "YOUR_LOG_STREAM_NAME"
-
-    # Optionally, clean up old Docker images to save space on GitLab Runner
-    - docker system prune -af
-    - docker logout
+    - echo $REPOSITORY_URL:$IMAGE_TAG
+    - TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "$TASK_DEFINTION_NAME" --region "${REGION}")
+    - NEW_CONTAINER_DEFINTIION=$(echo $TASK_DEFINITION | python $CI_PROJECT_DIR/update_task_definition_image.py $REPOSITORY_URL:$IMAGE_TAG)
+    - echo "Registering new container definition..."
+    - aws ecs register-task-definition --region "${REGION}" --family "${TASK_DEFINTION_NAME}" --container-definitions "${NEW_CONTAINER_DEFINTIION}"
+    - echo "Updating the service..."
+    - aws ecs update-service --region "${REGION}" --cluster "${CLUSTER_NAME}" --service "${SERVICE_NAME}"  --task-definition "${TASK_DEFINTION_NAME}"
+  # only:
+  #   - master
