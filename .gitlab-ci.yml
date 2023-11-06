@@ -7,8 +7,9 @@ services:
 
 stages:
   - build
-  # - test
-  # - review
+  - test1
+  - test2
+  - review
   # - dast
   - deploy
   # - production
@@ -59,6 +60,22 @@ Publishing_to_AWS_ECR:
       # Optionally, clean up old Docker images to save space on GitLab Runner
     # - docker system prune -af
     - docker logout
+
+Tseting_stage_1:
+  stage: test1
+  script:
+    - echo "Tested stage 1 successfully"
+
+Testing_stage_2:
+  stage: test2
+  script:
+    - echo "Tested stage 2 successfully"
+
+Review_stage:
+  stage: review
+  script: 
+    - echo "Review stage successfull"
+
 
 deploying_to_AWS_ECS:
   stage: deploy
