@@ -12,7 +12,7 @@ stages:
   # - dast
   - deploy
   # - production
-  # - cleanup12
+  # - cleanup1
 
 before_script:
   - amazon-linux-extras install docker
