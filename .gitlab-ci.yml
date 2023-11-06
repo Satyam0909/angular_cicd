@@ -88,9 +88,9 @@ deploying_to_AWS_ECS:
 
     # Deploy to ECS (you will need to customize these commands based on your ECS setup)
     - aws ecs update-service --region ${REGION} --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME}  --task-definition ${TASK_DEFINTION_NAME}
-    - aws logs describe-log-groups --log-group-name-prefix "/ecs/angular-cicd-cluster"
-    - aws logs describe-log-streams --log-group-name "/ecs/angular-cicd-cluster/angular-cicd"
-    - aws logs get-log-events --log-group-name "/ecs/angular-cicd-cluster/angular-cicd" --log-stream-name angular-cicd-log
+    # - aws logs describe-log-groups --log-group-name-prefix "/ecs/angular-cicd-cluster"
+    # - aws logs describe-log-streams --log-group-name "/ecs/angular-cicd-cluster/angular-cicd"
+    # - aws logs get-log-events --log-group-name "/ecs/angular-cicd-cluster/angular-cicd" --log-stream-name angular-cicd-log
 
     # Optionally, clean up old Docker images to save space on GitLab Runner
     - docker system prune -af
