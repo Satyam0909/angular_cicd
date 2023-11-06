@@ -7,8 +7,7 @@ services:
 
 stages:
   - build
-  - test1
-  - test2
+  - test
   - review
   # - dast
   - deploy
@@ -62,12 +61,12 @@ Publishing_to_AWS_ECR:
     - docker logout
 
 Tseting_stage_1:
-  stage: test1
+  stage: test
   script:
     - echo "Tested stage 1 successfully"
 
 Testing_stage_2:
-  stage: test2
+  stage: test
   script:
     - echo "Tested stage 2 successfully"
 
