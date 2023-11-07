@@ -21,8 +21,8 @@ before_script:
   - docker --version
 
 variables:
-  REGION: ap-south-1
-  DOCKER_REGISTRY: 021103227433.dkr.ecr.ap-south-1.amazonaws.com #<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com
+  # AWS_DEFAULT_REGION: ap-south-1
+  DOCKER_REGISTRY: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com #<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com
   # DOCKER_REPOSITORY: angular-cicd #<ECR_REPOSITORY_NAME>
   DOCKER_IMAGE_NAME: angular-cicd #<IMAGE_NAME>
   AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID  # Define these environment variables in your GitLab CI/CD settings
@@ -49,7 +49,7 @@ Publishing_to_AWS_ECR:
     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
     - echo "Building image..."
     - docker build -t "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" .
-    - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
+    - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
     - echo "Pushing image..."
     - docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
       # Deploy to ECS (you will need to customize these commands based on your ECS setup)
@@ -81,13 +81,13 @@ deploying_to_AWS_ECS:
   script:
     - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-    - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
+    - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
     - docker pull "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
-    - aws ecs describe-task-definition --region ${REGION} --task-definition ${TASK_DEFINTION_NAME}
+    - aws ecs describe-task-definition --region ${AWS_DEFAULT_REGION} --task-definition ${TASK_DEFINTION_NAME}
     # - docker tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" "$DOCKER_REGISTRY/$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
 
     # Deploy to ECS (you will need to customize these commands based on your ECS setup)
-    - aws ecs update-service --region ${REGION} --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME}  --task-definition ${TASK_DEFINTION_NAME}
+    - aws ecs update-service --region ${AWS_DEFAULT_REGION} --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME}  --task-definition ${TASK_DEFINTION_NAME} --force-new-deployment
     # - aws logs describe-log-groups --log-group-name-prefix "/ecs/angular-cicd-cluster"
     # - aws logs describe-log-streams --log-group-name "/ecs/angular-cicd-cluster/angular-cicd"
     # - aws logs get-log-events --log-group-name "/ecs/angular-cicd-cluster/angular-cicd" --log-stream-name angular-cicd-log
