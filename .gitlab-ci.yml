@@ -47,11 +47,12 @@ Publishing_to_AWS_ECR:
   script:
     - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    - aws configure set default.region $AWS_DEFAULT_REGION
     - echo "Building image..."
-    - docker build -t "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" .
+    - docker build -t "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" .
     - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
     - echo "Pushing image..."
-    - docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
+    - docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
       # Deploy to ECS (you will need to customize these commands based on your ECS setup)
     # - aws ecs update-service --cluster <ECS_CLUSTER_NAME> --service <ECS_SERVICE_NAME> --force-new-deployment
 
@@ -81,10 +82,11 @@ deploying_to_AWS_ECS:
   script:
     - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    - aws configure set default.region $AWS_DEFAULT_REGION
     - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
-    - docker pull "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
+    - docker pull "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
     - aws ecs describe-task-definition --region ${AWS_DEFAULT_REGION} --task-definition ${TASK_DEFINTION_NAME}
-    # - docker tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" "$DOCKER_REGISTRY/$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
+    # - docker tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" "$DOCKER_REGISTRY/$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
 
     # Deploy to ECS (you will need to customize these commands based on your ECS setup)
     - aws ecs update-service --region ${AWS_DEFAULT_REGION} --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME}  --task-definition ${TASK_DEFINTION_NAME} --force-new-deployment
