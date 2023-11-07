@@ -31,7 +31,7 @@ variables:
   TASK_DEFINTION_NAME: angular-cicd-task
   CLUSTER_NAME: angular-cicd-cluster
   SERVICE_NAME: angular-cicd-service
-  YOUR_IMAGE_DIGEST: latest
+  IMAGE_DIGEST: latest
 
 
 Publishing_to_AWS_ECR:
@@ -50,8 +50,9 @@ Publishing_to_AWS_ECR:
     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
     - aws configure set default.region $AWS_DEFAULT_REGION
     - echo "Deleting image"
-    - aws ecr batch-check-layer-availability --repository-name $DOCKER_REGISTRY --image-manifest '{"imageDigest":"$YOUR_IMAGE_DIGEST"}'
-    - aws ecr batch-delete-image --repository-name $DOCKER_REGISTRY --image-ids imageDigest="$YOUR_IMAGE_DIGEST"
+    # - aws ecr batch-check-layer-availability --repository-name $DOCKER_REGISTRY --image-manifest '{"imageDigest":"$YOUR_IMAGE_DIGEST"}'
+    - aws ecr batch-check-layer-availability --repository-name $DOCKER_REGISTRY --image-digest $IMAGE_DIGEST --layer-digests $(aws ecr list-images --repository-name $DOCKER_REGISTRY --filter "imageDigest=$IMAGE_DIGEST" --query 'imageDetails[*].imageDigest' --output json | jq -r '.[]')
+    - aws ecr batch-delete-image --repository-name $DOCKER_REGISTRY --image-ids imageDigest="$IMAGE_DIGEST"
     - echo "Building image..."
     - docker build -t "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" .
     - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
