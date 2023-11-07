@@ -54,10 +54,10 @@ Publishing_to_AWS_ECR:
     # - aws ecr batch-check-layer-availability --repository-name $DOCKER_REGISTRY --image-digest $IMAGE_DIGEST --layer-digests $(aws ecr list-images --repository-name $DOCKER_REGISTRY --filter "imageDigest=$IMAGE_DIGEST" --query 'imageDetails[*].imageDigest' --output json | jq -r '.[]')
     # - aws ecr batch-delete-image --repository-name $DOCKER_REGISTRY --image-ids imageDigest="$IMAGE_DIGEST"
     - echo "Building image..."
-    - docker build -t "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" .
+    - docker build -t "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA" .
     - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
     - echo "Pushing image..."
-    - docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
+    - docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
       # Deploy to ECS (you will need to customize these commands based on your ECS setup)
     # - aws ecs update-service --cluster <ECS_CLUSTER_NAME> --service <ECS_SERVICE_NAME> --force-new-deployment
 
@@ -89,8 +89,8 @@ deploying_to_AWS_ECS:
     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
     - aws configure set default.region $AWS_DEFAULT_REGION
     - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
-    - docker pull "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
-    - docker tag "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:latest" "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:latest"
+    - docker pull "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+    - docker tag "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:latest" "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
     - aws ecs describe-task-definition --region ${AWS_DEFAULT_REGION} --task-definition ${TASK_DEFINTION_NAME}
     # - docker tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" "$DOCKER_REGISTRY/$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
 
