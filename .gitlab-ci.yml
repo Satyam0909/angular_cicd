@@ -7,8 +7,8 @@ services:
 
 stages:
   - build
-  - test
-  - review
+  # - test
+  # - review
   # - dast
   - deploy
   # - production
@@ -66,20 +66,20 @@ Publishing_to_AWS_ECR:
     # - docker system prune -af
     - docker logout
 
-Tseting_stage_1:
-  stage: test
-  script:
-    - echo "Tested stage 1 successfully"
+# Tseting_stage_1:
+#   stage: test
+#   script:
+#     - echo "Tested stage 1 successfully"
 
-Testing_stage_2:
-  stage: test
-  script:
-    - echo "Tested stage 2 successfully"
+# Testing_stage_2:
+#   stage: test
+#   script:
+#     - echo "Tested stage 2 successfully"
 
-Review_stage:
-  stage: review
-  script: 
-    - echo "Review stage successfull"
+# Review_stage:
+#   stage: review
+#   script: 
+#     - echo "Review stage successfull"
 
 
 deploying_to_AWS_ECS:
@@ -90,10 +90,8 @@ deploying_to_AWS_ECS:
     - aws configure set default.region $AWS_DEFAULT_REGION
     - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$DOCKER_REGISTRY"
     - docker pull "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
-    - docker tag "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:latest" "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:latest"
+    # - docker tag "$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:latest" "$DOCKER_REGISTRY/$DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:latest"
     - aws ecs describe-task-definition --region ${AWS_DEFAULT_REGION} --task-definition ${TASK_DEFINTION_NAME}
-    # - docker tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" "$DOCKER_REGISTRY/$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
-
     # Deploy to ECS (you will need to customize these commands based on your ECS setup)
     - aws ecs update-service --region ${AWS_DEFAULT_REGION} --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME}  --task-definition ${TASK_DEFINTION_NAME}:46 --force-new-deployment
     # - aws logs describe-log-groups --log-group-name-prefix "/ecs/angular-cicd-cluster"
