@@ -20,7 +20,7 @@ COPY . .
 RUN npm run build --prod
 
 # Use a lightweight web server to serve the built Angular app
-FROM nginx:alpine
+FROM nginx:1.21.5-alpine
 
 # Copy the built app from the previous stage to the NGINX web server directory
 COPY --from=build /app/dist/angular-cicd-crud /usr/share/nginx/html
